@@ -5,6 +5,7 @@ const ejsMate = require("ejs-mate");
 const methodOverride = require("method-override");
 const Campground = require("./models/Campground");
 const catchAsync = require("./utilities/catchAsync");
+const ExpressError = require("./utilities/ExpressError");
 
 mongoose
   .connect("mongodb://localhost/yelp-camp", {
@@ -85,8 +86,14 @@ app.delete(
   })
 );
 
+app.all("*", (req, res, next) => {
+  next(new ExpressError("Page Not Found", 404));
+});
+
 app.use((err, req, res, next) => {
-  res.send("SOMETHING WENT WRONG");
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = "Something went terribly wrong!";
+  res.status(statusCode).render("error", { err });
 });
 
 app.listen(3000, () => {
