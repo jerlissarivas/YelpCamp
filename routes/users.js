@@ -39,10 +39,16 @@ router.post(
   }),
   (req, res) => {
     req.flash("success", "welcome back!");
-    // const redirectUrl = req.session.returnTo || "/campgrounds";
-    // delete req.session.returnTo;
+    const redirectUrl = req.session.returnTo || "/campgrounds";
+    delete req.session.returnTo;
     res.redirect("/campgrounds");
   }
 );
+
+router.get("/logout", (req, res) => {
+  req.logout();
+  req.flash("success", "Goodbye!");
+  res.redirect("/campgrounds");
+});
 
 module.exports = router;
